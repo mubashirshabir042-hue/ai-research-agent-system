@@ -57,6 +57,7 @@ The state object threaded through every node (see [`src/state.py`](src/state.py)
 - **Tavily API** for agent-optimized web retrieval
 - **FastAPI** backend streaming live node-by-node progress to the browser
 - **React + TypeScript + Tailwind CSS** (Vite) for the web UI, with Framer Motion and `react-markdown`
+- Visual identity: an editorial/academic-journal look (warm charcoal/paper palette, oxblood accent, Fraunces + Source Serif 4 for reading, real superscript footnote citations) rather than a generic dark-SaaS theme — the product's output is a long-form cited report, so the UI is designed to make reading it feel like a considered publication
 - **Rich** for CLI output, **pytest** for tests
 
 ## Setup

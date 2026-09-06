@@ -5,46 +5,59 @@
 :root {
   color-scheme: dark;
 
-  --bg: #0a0a0d;
-  --bg-elevated: #131318;
-  --bg-elevated-2: #191a20;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --text: #edeef2;
-  --text-muted: #9899a6;
-  --text-faint: #86868f;
-  --accent: #8b7cf6;
-  --accent-strong: #a596ff;
-  --accent-soft: rgba(139, 124, 246, 0.14);
-  --success: #34d399;
-  --success-soft: rgba(52, 211, 153, 0.14);
-  --danger: #f87171;
-  --danger-soft: rgba(248, 113, 113, 0.12);
-  --shadow-glow: 0 0 0 1px var(--accent-soft), 0 8px 32px -8px rgba(139, 124, 246, 0.35);
+  /* Warm charcoal "ink" ground, not a cold tech black. */
+  --bg: #1c1815;
+  --bg-elevated: #242019;
+  --bg-elevated-2: #2c2721;
+  --border: rgba(245, 235, 220, 0.1);
+  --border-strong: rgba(245, 235, 220, 0.18);
+  --text: #f3ece0;
+  --text-muted: #b8ab98;
+  --text-faint: #9c8f7d;
+
+  /* Oxblood accent -- an editorial "red pen" mark, not a SaaS purple.
+     accent-strong is a *lighter* variant for text-on-dark-bg (links,
+     citations); accent-hover is a *darker* variant for filled button
+     backgrounds, since white text on accent-strong fails contrast. */
+  --accent: #c1493e;
+  --accent-strong: #e0806f;
+  --accent-hover: #a83d33;
+  --accent-soft: rgba(193, 73, 62, 0.16);
+
+  --success: #7a9b6e;
+  --success-soft: rgba(122, 155, 110, 0.16);
+  --danger: #c2703a;
+  --danger-soft: rgba(194, 112, 58, 0.14);
+  --shadow-glow: 0 0 0 1px var(--accent-soft), 0 8px 28px -10px rgba(193, 73, 62, 0.4);
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-serif: "Source Serif 4", ui-serif, Georgia, serif;
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --bg: #faf9f7;
-  --bg-elevated: #ffffff;
-  --bg-elevated-2: #f2f1ee;
-  --border: rgba(15, 15, 20, 0.08);
-  --border-strong: rgba(15, 15, 20, 0.14);
-  --text: #17171c;
-  --text-muted: #62626d;
-  --text-faint: #6b6b76;
-  --accent: #6c4fe0;
-  --accent-strong: #5a3fd0;
-  --accent-soft: rgba(108, 79, 224, 0.10);
-  --success: #059669;
-  --success-soft: rgba(5, 150, 105, 0.10);
-  --danger: #dc2626;
-  --danger-soft: rgba(220, 38, 38, 0.08);
-  --shadow-glow: 0 0 0 1px var(--accent-soft), 0 8px 32px -8px rgba(108, 79, 224, 0.25);
+  /* Warm paper, not cold off-white. */
+  --bg: #f6f1e7;
+  --bg-elevated: #fffdf9;
+  --bg-elevated-2: #ece5d6;
+  --border: rgba(40, 30, 20, 0.1);
+  --border-strong: rgba(40, 30, 20, 0.18);
+  --text: #241f1a;
+  --text-muted: #5c5245;
+  --text-faint: #746b5c;
+
+  --accent: #9c3529;
+  --accent-strong: #7c2a20;
+  --accent-hover: #7c2a20;
+  --accent-soft: rgba(156, 53, 41, 0.1);
+
+  --success: #4d6b42;
+  --success-soft: rgba(77, 107, 66, 0.1);
+  --danger: #954f22;
+  --danger-soft: rgba(149, 79, 34, 0.1);
+  --shadow-glow: 0 0 0 1px var(--accent-soft), 0 8px 28px -10px rgba(156, 53, 41, 0.25);
 }
 
 @theme {
@@ -58,6 +71,7 @@
   --color-text-faint: var(--text-faint);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
@@ -66,6 +80,7 @@
 
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
+  --font-serif: var(--font-serif);
 }
 
 html,
@@ -75,10 +90,23 @@ body,
 }
 
 body {
+  position: relative;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Faint paper grain -- an editorial texture cue instead of a tech-SaaS glow. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 ::selection {
@@ -103,10 +131,10 @@ body {
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 1px var(--accent-soft), 0 0 0 0 rgba(139, 124, 246, 0.4);
+    box-shadow: 0 0 0 1px var(--accent-soft), 0 0 0 0 rgba(193, 73, 62, 0.35);
   }
   50% {
-    box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px 4px rgba(139, 124, 246, 0.28);
+    box-shadow: 0 0 0 1px var(--accent-soft), 0 0 18px 3px rgba(193, 73, 62, 0.22);
   }
 }
 
@@ -114,31 +142,23 @@ body {
   animation: pulse-glow 2.2s ease-in-out infinite;
 }
 
+/* Citations render as real superscript footnote marks, not chat-app pill badges. */
 .report-prose a[href^="#ref-"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.15rem;
-  height: 1.15rem;
-  padding: 0 0.3rem;
-  margin: 0 1px;
-  border-radius: 999px;
-  background: var(--accent-soft);
   color: var(--accent-strong);
-  font-size: 0.7rem;
   font-weight: 600;
+  font-size: 0.7em;
   text-decoration: none;
   vertical-align: super;
-  transition: background 0.15s ease, color 0.15s ease;
+  line-height: 0;
+  padding: 0 1px;
+  transition: color 0.15s ease;
 }
 
 .report-prose a[href^="#ref-"]:hover {
-  background: var(--accent);
-  color: white;
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .report-refs li:target {
   background: var(--accent-soft);
-  border-radius: 0.5rem;
 }
-

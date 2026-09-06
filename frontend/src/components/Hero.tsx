@@ -30,8 +30,8 @@ export function Hero({ onSubmit }: HeroProps) {
         }}
       />
 
-      <span className="relative mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-bg-elevated px-3 py-1 text-xs text-text-muted">
-        <Sparkles size={13} className="text-accent" />
+      <span className="relative mb-5 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-text-faint">
+        <Sparkles size={12} className="text-accent" />
         Multi-agent research, cited end to end
       </span>
 
@@ -55,7 +55,7 @@ export function Hero({ onSubmit }: HeroProps) {
         <button
           onClick={submit}
           disabled={!value.trim()}
-          className="flex shrink-0 items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-strong disabled:opacity-40"
+          className="flex shrink-0 items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover disabled:opacity-40"
         >
           Research <ArrowRight size={15} />
         </button>
@@ -67,7 +67,7 @@ export function Hero({ onSubmit }: HeroProps) {
           <button
             key={example}
             onClick={() => onSubmit(example)}
-            className="text-text-muted underline decoration-border decoration-1 underline-offset-4 transition hover:text-accent hover:decoration-accent"
+            className="text-text-muted underline decoration-border decoration-1 underline-offset-4 transition hover:text-accent-strong hover:decoration-accent-strong"
           >
             {example}
           </button>

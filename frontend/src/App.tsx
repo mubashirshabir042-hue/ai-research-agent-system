@@ -73,13 +73,20 @@ function AppShell() {
       </div>
 
       <div className="flex flex-1 flex-col overflow-y-auto">
-        <header className="flex items-center justify-between px-6 py-4">
-          <span className="font-display text-sm font-medium text-text-muted">Research Agent</span>
-          <ThemeToggle />
+        <header className="border-b border-border px-8 py-5">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-text-faint">
+                Autonomous Research
+              </p>
+              <h1 className="font-display text-xl font-semibold tracking-tight text-text">Research Agent</h1>
+            </div>
+            <ThemeToggle />
+          </div>
         </header>
 
         {status === "error" && !historyReport && (
-          <div className="mx-6 mb-4 flex items-center gap-2 rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">
+          <div className="mx-6 mt-4 flex items-center gap-2 border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">
             <AlertTriangle size={15} />
             {errorMessage}
           </div>

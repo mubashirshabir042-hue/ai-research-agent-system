@@ -47,7 +47,7 @@ export function Sidebar({ onSelectReport, onNewResearch, activeFilename, refresh
           exit={{ opacity: 0, scale: 0.9 }}
           transition={{ duration: 0.15 }}
           onClick={() => setCollapsed(false)}
-          className="flex h-fit items-center gap-2 rounded-xl border border-border p-2.5 text-text-muted transition hover:border-accent hover:text-accent"
+          className="flex h-fit items-center gap-2 rounded-sm border border-border p-2.5 text-text-muted transition hover:border-accent hover:text-accent-strong"
           title="Show history"
         >
           <PanelLeftOpen size={16} />
@@ -59,11 +59,11 @@ export function Sidebar({ onSelectReport, onNewResearch, activeFilename, refresh
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -12 }}
           transition={{ duration: 0.18 }}
-          className="flex h-full w-64 shrink-0 flex-col rounded-2xl border border-border bg-bg-elevated/60 p-4"
+          className="flex h-full w-64 shrink-0 flex-col rounded-sm border border-border bg-bg-elevated/60 p-4"
         >
           <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-medium text-text">
-              <History size={15} className="text-accent" />
+            <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.15em] text-text-faint">
+              <History size={13} className="text-accent" />
               History
             </div>
             <button
@@ -77,7 +77,7 @@ export function Sidebar({ onSelectReport, onNewResearch, activeFilename, refresh
 
           <button
             onClick={onNewResearch}
-            className="mb-4 flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-border py-2 text-xs text-text-muted transition hover:border-accent hover:text-accent"
+            className="mb-4 flex items-center justify-center gap-1.5 rounded-sm border border-dashed border-border py-2 text-xs text-text-muted transition hover:border-accent hover:text-accent-strong"
           >
             <Plus size={13} />
             New research
@@ -99,9 +99,9 @@ export function Sidebar({ onSelectReport, onNewResearch, activeFilename, refresh
                 <button
                   key={report.filename}
                   onClick={() => onSelectReport(report.filename)}
-                  className={`block w-full rounded-lg px-2.5 py-2 text-left transition ${
+                  className={`block w-full rounded-sm px-2.5 py-2 text-left transition ${
                     activeFilename === report.filename
-                      ? "bg-accent-soft text-accent"
+                      ? "bg-accent-soft text-accent-strong"
                       : "text-text-muted hover:bg-bg-elevated-2 hover:text-text"
                   }`}
                 >

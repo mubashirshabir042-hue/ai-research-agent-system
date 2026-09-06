@@ -117,21 +117,21 @@ export function ReportView({ content, onNewResearch }: ReportViewProps) {
             <div className="flex gap-2">
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-text-muted transition hover:border-accent hover:text-accent"
+                className="flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs text-text-muted transition hover:border-accent hover:text-accent-strong"
               >
                 {copied ? <Check size={13} /> : <Copy size={13} />}
                 {copied ? "Copied" : "Copy"}
               </button>
               <button
                 onClick={handleDownload}
-                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-text-muted transition hover:border-accent hover:text-accent"
+                className="flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs text-text-muted transition hover:border-accent hover:text-accent-strong"
               >
                 {downloaded ? <Check size={13} /> : <Download size={13} />}
                 {downloaded ? "Saved" : "Download"}
               </button>
               <button
                 onClick={onNewResearch}
-                className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white transition hover:bg-accent-strong"
+                className="flex items-center gap-1.5 rounded-sm bg-accent px-3 py-1.5 text-xs font-medium text-white transition hover:bg-accent-hover"
               >
                 <RotateCcw size={13} />
                 New research
@@ -139,7 +139,7 @@ export function ReportView({ content, onNewResearch }: ReportViewProps) {
             </div>
           </div>
 
-          <article className="report-prose prose prose-sm dark:prose-invert sm:prose-base max-w-none prose-headings:font-display prose-headings:font-medium prose-a:text-accent">
+          <article className="report-prose prose prose-sm dark:prose-invert sm:prose-base max-w-none font-serif prose-headings:font-display prose-headings:font-medium prose-a:text-accent-strong">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
@@ -156,16 +156,16 @@ export function ReportView({ content, onNewResearch }: ReportViewProps) {
 
           {parsed.references.length > 0 && (
             <div className="mt-10 border-t border-border pt-6">
-              <h2 className="mb-3 font-display text-lg font-medium text-text">References</h2>
-              <ol className="report-refs space-y-1.5">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-text-faint">Notes &amp; References</p>
+              <ol className="report-refs space-y-1.5 font-serif text-sm">
                 {parsed.references.map((ref) => (
-                  <li key={ref.n} id={`ref-${ref.n}`} className="flex gap-2 px-2 py-1 text-sm">
-                    <span className="text-text-faint">[{ref.n}]</span>
+                  <li key={ref.n} id={`ref-${ref.n}`} className="flex gap-2 px-2 py-1">
+                    <span className="text-text-faint">{ref.n}.</span>
                     <a
                       href={ref.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1 text-accent hover:underline"
+                      className="flex items-center gap-1 text-accent-strong hover:underline"
                     >
                       {domainOf(ref.url)}
                       <ExternalLink size={11} />
@@ -186,7 +186,7 @@ export function ReportView({ content, onNewResearch }: ReportViewProps) {
                   <a
                     key={heading.id}
                     href={`#${heading.id}`}
-                    className="block text-text-muted transition hover:text-accent"
+                    className="block text-text-muted transition hover:text-accent-strong"
                   >
                     {heading.text}
                   </a>

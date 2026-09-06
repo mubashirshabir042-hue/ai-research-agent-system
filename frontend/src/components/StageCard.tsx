@@ -48,16 +48,14 @@ export function StageCard({ icon: Icon, title, status, badge, isLast = false, ch
       </div>
 
       <div
-        className={`flex-1 rounded-2xl border bg-bg-elevated/80 p-5 backdrop-blur-sm transition-colors ${
+        className={`flex-1 rounded-sm border bg-bg-elevated/80 p-5 backdrop-blur-sm transition-colors ${
           status === "pending" ? "border-border opacity-60" : "border-border-strong"
         }`}
       >
         <div className="flex items-center gap-2">
           <h3 className="font-medium text-text">{title}</h3>
           {badge && (
-            <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent-strong">
-              {badge}
-            </span>
+            <span className="text-[11px] font-medium uppercase tracking-wide text-accent-strong">{badge}</span>
           )}
           {status === "active" && <span className="ml-auto h-2 w-2 animate-pulse rounded-full bg-accent" />}
           {status === "done" && <span className="ml-auto text-xs text-success">Done</span>}

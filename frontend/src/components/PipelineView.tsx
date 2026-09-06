@@ -71,7 +71,7 @@ function buildRows(rounds: Round[], isRunning: boolean, hasReport: boolean): Sta
       detail: (
         <div className="flex flex-wrap gap-1.5">
           {round.planner.sub_queries.map((q) => (
-            <span key={q} className="rounded-full border border-border bg-bg-elevated-2 px-2.5 py-1 text-xs text-text-muted">
+            <span key={q} className="rounded-sm border border-border bg-bg-elevated-2 px-2.5 py-1 text-xs text-text-muted">
               {q}
             </span>
           ))}
@@ -114,7 +114,7 @@ function buildRows(rounds: Round[], isRunning: boolean, hasReport: boolean): Sta
             {round.evaluator.sufficient ? (
               <span className="text-success">sufficient coverage</span>
             ) : (
-              <span className="text-accent">refining further</span>
+              <span className="text-accent-strong">refining further</span>
             )}
           </p>
           {!round.evaluator.sufficient && round.evaluator.missing_topics.length > 0 && (
