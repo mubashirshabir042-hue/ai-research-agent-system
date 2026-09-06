@@ -59,6 +59,28 @@ def test_non_quota_error_raises_immediately_without_trying_fallbacks():
     assert len(calls) == 1  # never tried a fallback
 
 
+def test_falls_back_on_transient_server_overload_not_just_quota():
+    # A 503 "high demand, try again" is not a quota error at all -- it's the
+    # model being temporarily overloaded -- but trying the next model in the
+    # chain is exactly the right response to it, same as a quota error.
+    overload_error = Exception(
+        "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently "
+        "experiencing high demand.', 'status': 'UNAVAILABLE'}}"
+    )
+    calls = []
+
+    def build_llm(provider, model):
+        calls.append((provider, model))
+        if model == "gemini-3.6-flash":
+            return FakeLLM(overload_error)
+        return FakeLLM("ok from next model")
+
+    result = invoke_with_fallback(build_llm, "prompt")
+
+    assert result == "ok from next model"
+    assert len(calls) >= 2
+
+
 def test_raises_last_error_when_every_model_is_exhausted():
     def build_llm(provider, model):
         return FakeLLM(Exception(f"429 RESOURCE_EXHAUSTED for {provider}:{model}"))
