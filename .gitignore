@@ -14,3 +14,4 @@ reports/*.md
 .idea/
 frontend/node_modules/
 frontend/dist/
+.claude/scheduled_tasks.lock

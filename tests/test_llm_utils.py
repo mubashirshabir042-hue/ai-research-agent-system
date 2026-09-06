@@ -75,7 +75,7 @@ def test_falls_back_to_groq_when_configured(monkeypatch):
     monkeypatch.setattr(
         llm_utils,
         "build_fallback_chain",
-        lambda: [("gemini", "gemini-3.6-flash"), ("groq", "openai/gpt-oss-120b")],
+        lambda: [("gemini", "gemini-3.6-flash"), ("groq", "openai/gpt-oss-20b")],
     )
 
     quota_error = Exception("429 RESOURCE_EXHAUSTED: quota exceeded")
@@ -90,4 +90,4 @@ def test_falls_back_to_groq_when_configured(monkeypatch):
     result = invoke_with_fallback(build_llm, "prompt")
 
     assert result == "ok from groq"
-    assert calls == [("gemini", "gemini-3.6-flash"), ("groq", "openai/gpt-oss-120b")]
+    assert calls == [("gemini", "gemini-3.6-flash"), ("groq", "openai/gpt-oss-20b")]

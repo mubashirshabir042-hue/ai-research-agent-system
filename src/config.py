@@ -31,7 +31,7 @@ FALLBACK_GEMINI_MODELS = [
 # so it survives even a total Gemini outage, not just one exhausted model.
 # Optional: only used if GROQ_API_KEY is set.
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 
 
 def get_llm(temperature: float = 0.2, model: str | None = None) -> ChatGoogleGenerativeAI:
