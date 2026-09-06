@@ -42,6 +42,14 @@ function AppShell() {
     }
   };
 
+  // Deep link support: /?report=<filename> opens a saved report directly,
+  // so a specific report can be shared or bookmarked.
+  useEffect(() => {
+    const filename = new URLSearchParams(window.location.search).get("report");
+    if (filename) handleSelectReport(filename);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   let main: ReactNode;
   if (historyReport) {
     main = <ReportView content={historyReport.content} onNewResearch={handleNewResearch} />;

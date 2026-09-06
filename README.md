@@ -9,6 +9,9 @@ animated web UI that shows the four agents working in real time.
 
 > Project Lead: Mubashir Shabir Memon · Roll No: 25SP-031-AI · Department: BSAI
 
+![Ask a question, get a cited research report](docs/hero.png)
+![Finished report with clickable inline citations](docs/report.png)
+
 ## How it works
 
 The system is a directed state graph with four agent nodes and one
