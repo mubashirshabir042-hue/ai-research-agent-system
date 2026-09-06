@@ -114,7 +114,7 @@ export function ReportView({ content, onNewResearch }: ReportViewProps) {
               <p className="mb-1 text-xs uppercase tracking-wide text-text-faint">Research Report</p>
               <h1 className="font-display text-2xl font-medium text-text sm:text-3xl">{parsed.title}</h1>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs text-text-muted transition hover:border-accent hover:text-accent-strong"

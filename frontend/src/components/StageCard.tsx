@@ -52,8 +52,8 @@ export function StageCard({ icon: Icon, title, status, badge, isLast = false, ch
           status === "pending" ? "border-border opacity-60" : "border-border-strong"
         }`}
       >
-        <div className="flex items-center gap-2">
-          <h3 className="font-medium text-text">{title}</h3>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <h3 className="whitespace-nowrap font-medium text-text">{title}</h3>
           {badge && (
             <span className="text-[11px] font-medium uppercase tracking-wide text-accent-strong">{badge}</span>
           )}
