@@ -16,8 +16,8 @@ interface StageCardProps {
 const ringClass: Record<StageStatus, string> = {
   pending: "border-border text-text-faint",
   active: "border-accent text-accent animate-pulse-glow",
-  done: "border-success/40 text-success",
-  error: "border-danger/40 text-danger",
+  done: "border-success text-success",
+  error: "border-danger text-danger",
 };
 
 export function StageCard({ icon: Icon, title, status, badge, isLast = false, children }: StageCardProps) {
@@ -41,7 +41,7 @@ export function StageCard({ icon: Icon, title, status, badge, isLast = false, ch
               animate={{ scaleY: status === "done" ? 1 : 0 }}
               transition={{ duration: 0.4 }}
               style={{ transformOrigin: "top" }}
-              className="absolute inset-0 rounded-full bg-success/50"
+              className="absolute inset-0 rounded-full bg-success"
             />
           </div>
         )}
