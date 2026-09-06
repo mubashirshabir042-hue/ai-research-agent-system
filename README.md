@@ -73,11 +73,16 @@ Then edit `.env` and add:
 - `GOOGLE_API_KEY` - from [Google AI Studio](https://aistudio.google.com/app/apikey) (free tier available)
 - `TAVILY_API_KEY` - from [Tavily](https://app.tavily.com) (free tier available)
 
-> Gemini's free tier is rate-limited (a handful of requests per minute). Each
-> research run makes several LLM calls (planner, evaluator, generator, and
-> more on a loop-back), so back-to-back runs can hit `429 RESOURCE_EXHAUSTED`
-> — the UI surfaces this as a plain-language error banner; just wait a bit
-> and retry.
+> Gemini's free tier caps requests **per model, per day** (not per minute) —
+> a heavily-used default model can run dry mid-session even though the key
+> itself is fine. Each research run makes several LLM calls (planner,
+> evaluator, generator, and more on a loop-back), so this is easy to hit
+> during development. `src/llm_utils.py` automatically falls back to the
+> models in `GEMINI_FALLBACK_MODELS` when this happens, so a single
+> exhausted model doesn't stop research runs — you'll see a `[Fallback]`
+> line in the console when it kicks in. If every configured model is
+> exhausted, the UI surfaces a plain-language error banner instead of a raw
+> stack trace.
 
 ## Usage
 
@@ -137,6 +142,7 @@ reports are listed in the History sidebar.
 │   ├── config.py              # env config + Gemini client factory
 │   ├── graph.py                # StateGraph assembly + conditional routing
 │   ├── service.py               # build_initial_state/save_report, shared by CLI + API
+│   ├── llm_utils.py              # automatic fallback across Gemini models on quota exhaustion
 │   ├── utils.py                 # slugify, citation-number extraction, logging
 │   ├── nodes/
 │   │   ├── planner.py            # Node 1: Query Planner

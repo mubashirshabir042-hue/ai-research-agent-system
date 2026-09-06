@@ -5,6 +5,7 @@ from typing import List
 from pydantic import BaseModel, Field
 
 from ..config import get_llm
+from ..llm_utils import invoke_with_fallback
 from ..state import ResearchState
 from ..utils import log
 
@@ -58,8 +59,6 @@ def evaluator_node(state: ResearchState) -> dict:
         log("[Evaluator] no data collected, marking insufficient", style="yellow")
         return {"evaluated_facts": [], "sufficient": False, "missing_topics": []}
 
-    llm = get_llm(temperature=0.1).with_structured_output(EvaluationResult)
-
     snippet_blocks = [
         f"[{i}] URL: {d['url']}\n{d['content'][:1500]}"
         for i, d in enumerate(collected, start=1)
@@ -68,7 +67,10 @@ def evaluator_node(state: ResearchState) -> dict:
         topic=state["user_query"], snippets="\n\n".join(snippet_blocks)
     )
 
-    result: EvaluationResult = llm.invoke(prompt)
+    result: EvaluationResult = invoke_with_fallback(
+        lambda model: get_llm(temperature=0.1, model=model).with_structured_output(EvaluationResult),
+        prompt,
+    )
     log(f"[Evaluator] {len(result.facts)} facts, sufficient={result.sufficient}")
 
     return {

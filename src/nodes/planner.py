@@ -5,6 +5,7 @@ from typing import List
 from pydantic import BaseModel, Field
 
 from ..config import get_llm
+from ..llm_utils import invoke_with_fallback
 from ..state import ResearchState
 from ..utils import log
 
@@ -43,7 +44,6 @@ class SubQueryPlan(BaseModel):
 
 
 def planner_node(state: ResearchState) -> dict:
-    llm = get_llm(temperature=0.3).with_structured_output(SubQueryPlan)
     existing = state.get("sub_queries", [])
 
     if existing and state.get("missing_topics"):
@@ -55,7 +55,10 @@ def planner_node(state: ResearchState) -> dict:
     else:
         prompt = INITIAL_PROMPT.format(topic=state["user_query"])
 
-    plan: SubQueryPlan = llm.invoke(prompt)
+    plan: SubQueryPlan = invoke_with_fallback(
+        lambda model: get_llm(temperature=0.3, model=model).with_structured_output(SubQueryPlan),
+        prompt,
+    )
 
     existing_lower = {q.lower().strip() for q in existing}
     new_queries = [

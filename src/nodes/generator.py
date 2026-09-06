@@ -1,6 +1,7 @@
 """Node 4: Report Generator - drafts the final markdown report with strict citations."""
 
 from ..config import get_llm
+from ..llm_utils import invoke_with_fallback
 from ..state import ResearchState
 from ..utils import extract_cited_numbers, log, message_text
 
@@ -49,9 +50,9 @@ def generator_node(state: ResearchState) -> dict:
         nums = "".join(f"[{url_index[u]}]" for u in fact["source_urls"] if u in url_index)
         fact_lines.append(f"- {fact['statement']} {nums}")
 
-    llm = get_llm(temperature=0.4)
     prompt = GEN_PROMPT.format(topic=topic, facts="\n".join(fact_lines))
-    body = message_text(llm.invoke(prompt).content).strip()
+    response = invoke_with_fallback(lambda model: get_llm(temperature=0.4, model=model), prompt)
+    body = message_text(response.content).strip()
 
     cited_numbers = extract_cited_numbers(body)
     index_to_url = {v: k for k, v in url_index.items()}
