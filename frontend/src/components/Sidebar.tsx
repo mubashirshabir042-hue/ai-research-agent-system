@@ -44,7 +44,7 @@ export function Sidebar({ onSelectReport, onNewResearch, activeFilename, refresh
   }
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-bg-elevated/40 p-4">
+    <aside className="flex h-full w-64 shrink-0 flex-col rounded-2xl border border-border bg-bg-elevated/60 p-4">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-medium text-text">
           <History size={15} className="text-accent" />
