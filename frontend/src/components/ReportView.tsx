@@ -1,7 +1,8 @@
 import { isValidElement, useMemo, useState, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Check, Copy, Download, ExternalLink, RotateCcw } from "lucide-react";
+import { Check, Copy, ExternalLink, FileDown, FileText, RotateCcw } from "lucide-react";
+import { downloadReportExport, type ExportFormat } from "../api";
 
 interface ParsedReport {
   title: string;
@@ -85,7 +86,10 @@ export function ReportView({ content, onNewResearch }: ReportViewProps) {
   const parsed = useMemo(() => parseReport(content), [content]);
   const headings = useMemo(() => extractHeadings(parsed.body), [parsed.body]);
   const [copied, setCopied] = useState(false);
-  const [downloaded, setDownloaded] = useState(false);
+  const [exportStatus, setExportStatus] = useState<Record<ExportFormat, "idle" | "loading" | "done" | "error">>({
+    pdf: "idle",
+    docx: "idle",
+  });
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(content);
@@ -93,16 +97,17 @@ export function ReportView({ content, onNewResearch }: ReportViewProps) {
     setTimeout(() => setCopied(false), 1500);
   };
 
-  const handleDownload = () => {
-    const blob = new Blob([content], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${parsed.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setDownloaded(true);
-    setTimeout(() => setDownloaded(false), 1500);
+  const handleExport = async (format: ExportFormat) => {
+    setExportStatus((s) => ({ ...s, [format]: "loading" }));
+    try {
+      const stem = parsed.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "research-report";
+      await downloadReportExport(content, format, stem);
+      setExportStatus((s) => ({ ...s, [format]: "done" }));
+    } catch {
+      setExportStatus((s) => ({ ...s, [format]: "error" }));
+    } finally {
+      setTimeout(() => setExportStatus((s) => ({ ...s, [format]: "idle" })), 1800);
+    }
   };
 
   return (
@@ -123,11 +128,32 @@ export function ReportView({ content, onNewResearch }: ReportViewProps) {
                 {copied ? "Copied" : "Copy"}
               </button>
               <button
-                onClick={handleDownload}
-                className="flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs text-text-muted transition hover:border-accent hover:text-accent-strong"
+                onClick={() => handleExport("pdf")}
+                disabled={exportStatus.pdf === "loading"}
+                className="flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs text-text-muted transition hover:border-accent hover:text-accent-strong disabled:opacity-50"
               >
-                {downloaded ? <Check size={13} /> : <Download size={13} />}
-                {downloaded ? "Saved" : "Download"}
+                {exportStatus.pdf === "done" ? <Check size={13} /> : <FileText size={13} />}
+                {exportStatus.pdf === "loading"
+                  ? "Exporting…"
+                  : exportStatus.pdf === "done"
+                    ? "Saved"
+                    : exportStatus.pdf === "error"
+                      ? "Failed"
+                      : "PDF"}
+              </button>
+              <button
+                onClick={() => handleExport("docx")}
+                disabled={exportStatus.docx === "loading"}
+                className="flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 text-xs text-text-muted transition hover:border-accent hover:text-accent-strong disabled:opacity-50"
+              >
+                {exportStatus.docx === "done" ? <Check size={13} /> : <FileDown size={13} />}
+                {exportStatus.docx === "loading"
+                  ? "Exporting…"
+                  : exportStatus.docx === "done"
+                    ? "Saved"
+                    : exportStatus.docx === "error"
+                      ? "Failed"
+                      : "Word"}
               </button>
               <button
                 onClick={onNewResearch}

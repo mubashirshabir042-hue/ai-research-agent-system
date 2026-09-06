@@ -59,3 +59,28 @@ export async function getReport(filename: string): Promise<{ filename: string; c
   if (!response.ok) throw new Error("Failed to load report");
   return response.json();
 }
+
+export type ExportFormat = "pdf" | "docx";
+
+/** Fetches a PDF/Word rendering of the given report markdown and triggers a
+ * browser download for it, named after the report's slug. */
+export async function downloadReportExport(
+  content: string,
+  format: ExportFormat,
+  filenameStem: string,
+): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/export/${format}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
+  });
+  if (!response.ok) throw new Error(`Failed to export ${format.toUpperCase()}`);
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${filenameStem}.${format}`;
+  a.click();
+  URL.revokeObjectURL(url);
+}

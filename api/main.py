@@ -14,16 +14,21 @@ from typing import Iterator
 from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from src.export import render_docx, render_pdf
 from src.graph import build_graph
 from src.service import build_initial_state, save_report
 
 REPORTS_DIR = Path("reports")
 FRONTEND_DIST = Path("frontend/dist")
 FILENAME_RE = re.compile(r"^[a-z0-9-]+_(\d+)\.md$")
+EXPORT_MEDIA_TYPES = {
+    "pdf": "application/pdf",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
 
 app = FastAPI(title="AI Research Agent System API")
 
@@ -37,6 +42,10 @@ app.add_middleware(
 
 class ResearchRequest(BaseModel):
     query: str = Field(min_length=1, max_length=500)
+
+
+class ExportRequest(BaseModel):
+    content: str = Field(min_length=1)
 
 
 def _friendly_error(exc: Exception) -> str:
@@ -122,6 +131,20 @@ def _stream_research(query: str) -> Iterator[str]:
 @app.post("/api/research")
 def research(request: ResearchRequest) -> StreamingResponse:
     return StreamingResponse(_stream_research(request.query), media_type="application/x-ndjson")
+
+
+@app.post("/api/export/{fmt}")
+def export_report(fmt: str, request: ExportRequest) -> Response:
+    if fmt not in EXPORT_MEDIA_TYPES:
+        raise HTTPException(status_code=400, detail="format must be 'pdf' or 'docx'")
+
+    data = render_pdf(request.content) if fmt == "pdf" else render_docx(request.content)
+
+    return Response(
+        content=data,
+        media_type=EXPORT_MEDIA_TYPES[fmt],
+        headers={"Content-Disposition": f'attachment; filename="report.{fmt}"'},
+    )
 
 
 if FRONTEND_DIST.exists():

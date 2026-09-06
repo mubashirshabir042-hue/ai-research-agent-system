@@ -61,6 +61,33 @@ def test_research_rejects_empty_query():
     assert response.status_code == 422
 
 
+SAMPLE_REPORT = "# Research Report: Test Topic\n\n## Section One\n\nSome text [1].\n\n## References\n[1] https://example.com\n"
+
+
+def test_export_pdf_returns_pdf_bytes():
+    response = client.post("/api/export/pdf", json={"content": SAMPLE_REPORT})
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF")
+
+
+def test_export_docx_returns_docx_bytes():
+    response = client.post("/api/export/docx", json={"content": SAMPLE_REPORT})
+    assert response.status_code == 200
+    assert "wordprocessingml" in response.headers["content-type"]
+    assert response.content.startswith(b"PK")  # docx is a zip archive
+
+
+def test_export_rejects_unknown_format():
+    response = client.post("/api/export/txt", json={"content": SAMPLE_REPORT})
+    assert response.status_code == 400
+
+
+def test_export_rejects_empty_content():
+    response = client.post("/api/export/pdf", json={"content": ""})
+    assert response.status_code == 422
+
+
 def test_friendly_error_strips_json_blob_and_adds_hint():
     exc = Exception(
         "Error calling model 'gemini-3.6-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. "

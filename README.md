@@ -130,7 +130,10 @@ Open http://localhost:8000 — FastAPI serves the built frontend directly.
 
 The web UI shows the four agents running live (including a "Round 2" replay
 if the evaluator loops back for more research), then renders the finished
-report with clickable citation pills that jump to the References list. Past
+report with clickable citation pills that jump to the References list.
+Reports can be copied as markdown or downloaded as a real PDF or Word
+(.docx) file, rendered server-side (`src/export.py`) with proper headings,
+lists, and clickable reference links — not just a styled HTML printout. Past
 reports are listed in the History sidebar.
 
 ## Project structure
@@ -143,6 +146,7 @@ reports are listed in the History sidebar.
 │   ├── graph.py                # StateGraph assembly + conditional routing
 │   ├── service.py               # build_initial_state/save_report, shared by CLI + API
 │   ├── llm_utils.py              # automatic fallback across Gemini models on quota exhaustion
+│   ├── export.py                 # markdown -> PDF/DOCX rendering for report downloads
 │   ├── utils.py                 # slugify, citation-number extraction, logging
 │   ├── nodes/
 │   │   ├── planner.py            # Node 1: Query Planner
