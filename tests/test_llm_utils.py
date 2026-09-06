@@ -41,7 +41,9 @@ def test_falls_back_across_gemini_models_on_quota_exhaustion():
     assert result == "ok from fallback"
     assert calls[0] == ("gemini", "gemini-3.6-flash")
     assert len(calls) >= 2
-    assert all(provider == "gemini" for provider, _ in calls)  # no XAI_API_KEY in test env
+    # Succeeds on the second chain entry (any model but the first "fails"),
+    # which is still a Gemini fallback regardless of whether Groq is configured.
+    assert all(provider == "gemini" for provider, _ in calls)
 
 
 def test_non_quota_error_raises_immediately_without_trying_fallbacks():
@@ -65,8 +67,7 @@ def test_raises_last_error_when_every_model_is_exhausted():
         invoke_with_fallback(build_llm, "prompt")
 
 
-def test_falls_back_to_grok_when_xai_key_configured(monkeypatch):
-    monkeypatch.setenv("XAI_API_KEY", "test-key")
+def test_falls_back_to_groq_when_configured(monkeypatch):
     # build_fallback_chain() reads config module globals set at import time,
     # so patch the chain function directly rather than re-importing config.
     import src.llm_utils as llm_utils
@@ -74,7 +75,7 @@ def test_falls_back_to_grok_when_xai_key_configured(monkeypatch):
     monkeypatch.setattr(
         llm_utils,
         "build_fallback_chain",
-        lambda: [("gemini", "gemini-3.6-flash"), ("grok", "grok-4-fast")],
+        lambda: [("gemini", "gemini-3.6-flash"), ("groq", "openai/gpt-oss-120b")],
     )
 
     quota_error = Exception("429 RESOURCE_EXHAUSTED: quota exceeded")
@@ -84,9 +85,9 @@ def test_falls_back_to_grok_when_xai_key_configured(monkeypatch):
         calls.append((provider, model))
         if provider == "gemini":
             return FakeLLM(quota_error)
-        return FakeLLM("ok from grok")
+        return FakeLLM("ok from groq")
 
     result = invoke_with_fallback(build_llm, "prompt")
 
-    assert result == "ok from grok"
-    assert calls == [("gemini", "gemini-3.6-flash"), ("grok", "grok-4-fast")]
+    assert result == "ok from groq"
+    assert calls == [("gemini", "gemini-3.6-flash"), ("groq", "openai/gpt-oss-120b")]

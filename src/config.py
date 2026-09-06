@@ -16,7 +16,7 @@ MAX_RESULTS_PER_QUERY = int(os.getenv("MAX_RESULTS_PER_QUERY", "4"))
 
 # Gemini's free tier caps requests *per model, per day* (independently for
 # each model). If GEMINI_MODEL runs out, these are tried in order before
-# falling through to Grok (if configured) -- see src/llm_utils.py.
+# falling through to Groq (if configured) -- see src/llm_utils.py.
 FALLBACK_GEMINI_MODELS = [
     m.strip()
     for m in os.getenv(
@@ -25,12 +25,13 @@ FALLBACK_GEMINI_MODELS = [
     if m.strip()
 ]
 
-# xAI's Grok, used via its OpenAI-compatible API as a *cross-provider* last
-# resort -- it draws from an entirely separate quota, so it survives even a
-# total Gemini outage, not just one exhausted model. Optional: only used if
-# XAI_API_KEY is set.
-XAI_API_KEY = os.getenv("XAI_API_KEY")
-GROK_MODEL = os.getenv("GROK_MODEL", "grok-4-fast")
+# Groq (console.groq.com -- fast inference for open models, not to be
+# confused with xAI's "Grok"), used via its OpenAI-compatible API as a
+# *cross-provider* last resort -- it draws from an entirely separate quota,
+# so it survives even a total Gemini outage, not just one exhausted model.
+# Optional: only used if GROQ_API_KEY is set.
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
 
 def get_llm(temperature: float = 0.2, model: str | None = None) -> ChatGoogleGenerativeAI:
@@ -57,21 +58,21 @@ def get_llm(temperature: float = 0.2, model: str | None = None) -> ChatGoogleGen
     )
 
 
-def get_grok_llm(temperature: float = 0.2, model: str | None = None) -> ChatOpenAI:
-    """Return a Grok (xAI) chat model via its OpenAI-compatible API.
+def get_groq_llm(temperature: float = 0.2, model: str | None = None) -> ChatOpenAI:
+    """Return a Groq chat model via its OpenAI-compatible API.
 
     Raises:
-        RuntimeError: if XAI_API_KEY is missing.
+        RuntimeError: if GROQ_API_KEY is missing.
     """
-    if not XAI_API_KEY:
+    if not GROQ_API_KEY:
         raise RuntimeError(
-            "XAI_API_KEY is not set. Copy .env.example to .env and add your "
-            "xAI API key (https://console.x.ai)."
+            "GROQ_API_KEY is not set. Copy .env.example to .env and add your "
+            "Groq API key (https://console.groq.com/keys)."
         )
     return ChatOpenAI(
-        base_url="https://api.x.ai/v1",
-        api_key=XAI_API_KEY,
-        model=model or GROK_MODEL,
+        base_url="https://api.groq.com/openai/v1",
+        api_key=GROQ_API_KEY,
+        model=model or GROQ_MODEL,
         temperature=temperature,
     )
 
@@ -79,17 +80,17 @@ def get_grok_llm(temperature: float = 0.2, model: str | None = None) -> ChatOpen
 def get_chat_model(provider: str, model: str, temperature: float = 0.2):
     """Dispatch to the right provider's client -- used by invoke_with_fallback
     so call sites don't need to know which provider a given fallback step is."""
-    if provider == "grok":
-        return get_grok_llm(temperature, model)
+    if provider == "groq":
+        return get_groq_llm(temperature, model)
     return get_llm(temperature, model)
 
 
 def build_fallback_chain() -> list[tuple[str, str]]:
     """Ordered (provider, model) pairs to try: the primary Gemini model, then
-    each configured Gemini fallback, then Grok as a cross-provider last
-    resort if XAI_API_KEY is set."""
+    each configured Gemini fallback, then Groq as a cross-provider last
+    resort if GROQ_API_KEY is set."""
     chain = [("gemini", GEMINI_MODEL)]
     chain += [("gemini", m) for m in FALLBACK_GEMINI_MODELS]
-    if XAI_API_KEY:
-        chain.append(("grok", GROK_MODEL))
+    if GROQ_API_KEY:
+        chain.append(("groq", GROQ_MODEL))
     return chain

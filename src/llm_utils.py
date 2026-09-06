@@ -3,8 +3,8 @@
 Google's free tier caps requests *per model, per day*, independently for
 each model -- a heavily-used default model can run dry mid-session while
 sibling models on the same API key still have quota untouched. Beyond that,
-Grok (xAI) can be configured as a cross-provider last resort that survives
-even a total Gemini outage, since it draws from an entirely separate quota.
+Groq can be configured as a cross-provider last resort that survives even a
+total Gemini outage, since it draws from an entirely separate quota.
 """
 
 from typing import Any, Callable
