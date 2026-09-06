@@ -53,7 +53,7 @@ The state object threaded through every node (see [`src/state.py`](src/state.py)
 
 - **Python 3.10+**
 - **LangGraph + LangChain** for the stateful multi-agent workflow
-- **Google Gemini** (`gemini-3.6-flash` by default, swappable to `gemini-3.6-pro`) via `langchain-google-genai`
+- **Google Gemini** (`gemini-3.6-flash` by default, swappable to `gemini-3.6-pro`) via `langchain-google-genai`, with automatic fallback across sibling Gemini models and, optionally, **Grok (xAI)** via `langchain-openai` (its OpenAI-compatible API) as a cross-provider last resort
 - **Tavily API** for agent-optimized web retrieval
 - **FastAPI** backend streaming live node-by-node progress to the browser
 - **React + TypeScript + Tailwind CSS** (Vite) for the web UI, with Framer Motion and `react-markdown`
@@ -80,9 +80,14 @@ Then edit `.env` and add:
 > during development. `src/llm_utils.py` automatically falls back to the
 > models in `GEMINI_FALLBACK_MODELS` when this happens, so a single
 > exhausted model doesn't stop research runs — you'll see a `[Fallback]`
-> line in the console when it kicks in. If every configured model is
-> exhausted, the UI surfaces a plain-language error banner instead of a raw
-> stack trace.
+> line in the console when it kicks in.
+>
+> Optionally add `XAI_API_KEY` for **Grok as a cross-provider last resort**,
+> tried only after every configured Gemini model is exhausted — since it's a
+> separate provider with its own quota, it survives even a total Gemini
+> outage. Get a key at [console.x.ai](https://console.x.ai). If every
+> configured model *and* Grok are exhausted, the UI surfaces a
+> plain-language error banner instead of a raw stack trace.
 
 ## Usage
 
@@ -145,7 +150,7 @@ reports are listed in the History sidebar.
 │   ├── config.py              # env config + Gemini client factory
 │   ├── graph.py                # StateGraph assembly + conditional routing
 │   ├── service.py               # build_initial_state/save_report, shared by CLI + API
-│   ├── llm_utils.py              # automatic fallback across Gemini models on quota exhaustion
+│   ├── llm_utils.py              # automatic fallback across Gemini models, then Grok, on quota exhaustion
 │   ├── export.py                 # markdown -> PDF/DOCX rendering for report downloads
 │   ├── utils.py                 # slugify, citation-number extraction, logging
 │   ├── nodes/

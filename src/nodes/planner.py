@@ -4,7 +4,7 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from ..config import get_llm
+from ..config import get_chat_model
 from ..llm_utils import invoke_with_fallback
 from ..state import ResearchState
 from ..utils import log
@@ -56,7 +56,7 @@ def planner_node(state: ResearchState) -> dict:
         prompt = INITIAL_PROMPT.format(topic=state["user_query"])
 
     plan: SubQueryPlan = invoke_with_fallback(
-        lambda model: get_llm(temperature=0.3, model=model).with_structured_output(SubQueryPlan),
+        lambda provider, model: get_chat_model(provider, model, temperature=0.3).with_structured_output(SubQueryPlan),
         prompt,
     )
 

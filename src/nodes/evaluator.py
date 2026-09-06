@@ -4,7 +4,7 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from ..config import get_llm
+from ..config import get_chat_model
 from ..llm_utils import invoke_with_fallback
 from ..state import ResearchState
 from ..utils import log
@@ -68,7 +68,9 @@ def evaluator_node(state: ResearchState) -> dict:
     )
 
     result: EvaluationResult = invoke_with_fallback(
-        lambda model: get_llm(temperature=0.1, model=model).with_structured_output(EvaluationResult),
+        lambda provider, model: get_chat_model(provider, model, temperature=0.1).with_structured_output(
+            EvaluationResult
+        ),
         prompt,
     )
     log(f"[Evaluator] {len(result.facts)} facts, sufficient={result.sufficient}")
