@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+reports/*.md
+!reports/.gitkeep
+.vscode/
+.idea/
+frontend/node_modules/
+frontend/dist/
